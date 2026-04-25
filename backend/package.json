@@ -1,0 +1,32 @@
+{
+  "name": "personal-finance-backend",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "tsx src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.6.0",
+    "@vitest/ui": "^3.2.4",
+    "nodemon": "^3.1.11",
+    "typescript": "^6.0.2",
+    "vitest": "^3.2.4"
+  }
+}

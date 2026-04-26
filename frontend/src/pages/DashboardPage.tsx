@@ -16,7 +16,13 @@ function fmt(n: number): string {
 }
 
 export default function DashboardPage() {
-  const { authFetch, username } = useAuth();
+  const { authFetch, username, token } = useAuth();
+
+  const riskProfile = (() => {
+    if (!token) return null;
+    try { return (JSON.parse(atob(token.split(".")[1])) as { riskProfile?: string }).riskProfile ?? null; }
+    catch { return null; }
+  })();
   const [netWorth,      setNetWorth]      = useState<number | null>(null);
   const [budgetSummary, setBudgetSummary] = useState<{ income: number; expenses: number } | null>(null);
   const [goals,         setGoals]         = useState<SavingsGoal[]>([]);
@@ -60,7 +66,10 @@ export default function DashboardPage() {
         <div className="dashboard-layout">
           <div className="dashboard-left">
             <h1 className="page-title">Dashboard</h1>
-            <p className="dashboard-greeting">Welcome back, {username}.</p>
+            <p className="dashboard-greeting">
+          Welcome back, {username}.
+          {riskProfile && <span className="risk-badge-sm">{riskProfile}</span>}
+        </p>
 
             {loading ? (
               <div className="status-msg">Loading...</div>

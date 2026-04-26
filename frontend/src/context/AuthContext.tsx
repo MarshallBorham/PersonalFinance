@@ -1,30 +1,46 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface AuthContextValue {
-  token:          string | null;
-  username:       string | null;
-  isGuest:        boolean;
-  isLoggedIn:     boolean;
-  login:          (token: string, username: string) => void;
-  loginAsGuest:   () => void;
-  logout:         () => void;
-  authFetch:      (url: string, options?: RequestInit) => Promise<Response>;
+  token:              string | null;
+  username:           string | null;
+  isGuest:            boolean;
+  isLoggedIn:         boolean;
+  onboardingComplete: boolean;
+  login:              (token: string, username: string, onboardingComplete: boolean) => void;
+  loginAsGuest:       () => void;
+  completeOnboarding: (newToken: string) => void;
+  logout:             () => void;
+  authFetch:          (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+function decodeOnboarding(token: string | null): boolean {
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1])) as { onboardingComplete?: boolean };
+    return payload.onboardingComplete ?? false;
+  } catch {
+    return false;
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token,    setToken]    = useState<string | null>(() => sessionStorage.getItem("token"));
   const [username, setUsername] = useState<string | null>(() => sessionStorage.getItem("username"));
   const [isGuest,  setIsGuest]  = useState<boolean>(() => sessionStorage.getItem("guest") === "true");
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean>(() =>
+    decodeOnboarding(sessionStorage.getItem("token"))
+  );
 
-  function login(newToken: string, newUsername: string) {
+  function login(newToken: string, newUsername: string, onboarded: boolean) {
     sessionStorage.setItem("token",    newToken);
     sessionStorage.setItem("username", newUsername);
     sessionStorage.removeItem("guest");
     setToken(newToken);
     setUsername(newUsername);
     setIsGuest(false);
+    setOnboardingComplete(onboarded);
   }
 
   function loginAsGuest() {
@@ -34,6 +50,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUsername(null);
     setIsGuest(true);
+    setOnboardingComplete(true); // guests skip onboarding
+  }
+
+  function completeOnboarding(newToken: string) {
+    sessionStorage.setItem("token", newToken);
+    setToken(newToken);
+    setOnboardingComplete(true);
   }
 
   function logout() {
@@ -43,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUsername(null);
     setIsGuest(false);
+    setOnboardingComplete(false);
   }
 
   function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
@@ -60,7 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider value={{
       token, username, isGuest,
       isLoggedIn: !!token || isGuest,
-      login, loginAsGuest, logout, authFetch,
+      onboardingComplete,
+      login, loginAsGuest, completeOnboarding, logout, authFetch,
     }}>
       {children}
     </AuthContext.Provider>

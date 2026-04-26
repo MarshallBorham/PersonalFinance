@@ -2,9 +2,12 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface IUser extends Document {
-  username: string;
-  passwordHash: string;
-  createdAt: Date;
+  username:           string;
+  passwordHash:       string;
+  createdAt:          Date;
+  onboardingComplete: boolean;
+  riskProfile?:       string;
+  riskScore?:         number;
   verifyPassword(password: string): Promise<boolean>;
 }
 
@@ -13,9 +16,12 @@ interface IUserModel extends Model<IUser> {
 }
 
 const userSchema = new Schema<IUser>({
-  username:     { type: String, required: true, unique: true, lowercase: true, trim: true },
-  passwordHash: { type: String, required: true },
-  createdAt:    { type: Date, default: Date.now },
+  username:           { type: String, required: true, unique: true, lowercase: true, trim: true },
+  passwordHash:       { type: String, required: true },
+  createdAt:          { type: Date, default: Date.now },
+  onboardingComplete: { type: Boolean, default: false },
+  riskProfile:        { type: String },
+  riskScore:          { type: Number },
 });
 
 userSchema.methods.verifyPassword = function (password: string): Promise<boolean> {

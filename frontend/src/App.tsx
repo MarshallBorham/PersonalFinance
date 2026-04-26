@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router";
 import { useAuth } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import OnboardingPage from "./pages/OnboardingPage";
 import DashboardPage from "./pages/DashboardPage";
 import RetirementPage from "./pages/RetirementPage";
 import BudgetPage from "./pages/BudgetPage";
@@ -10,8 +11,17 @@ import GoalsPage from "./pages/GoalsPage";
 import PortfolioPage from "./pages/PortfolioPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isLoggedIn } = useAuth();
-  return isLoggedIn ? <>{children}</> : <Navigate to="/login" replace />;
+  const { isLoggedIn, onboardingComplete } = useAuth();
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  if (!onboardingComplete) return <Navigate to="/onboarding" replace />;
+  return <>{children}</>;
+}
+
+function OnboardingRoute({ children }: { children: React.ReactNode }) {
+  const { isLoggedIn, onboardingComplete } = useAuth();
+  if (!isLoggedIn) return <Navigate to="/login" replace />;
+  if (onboardingComplete) return <Navigate to="/" replace />;
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -19,6 +29,7 @@ export default function App() {
     <Routes>
       <Route path="/login"      element={<LoginPage />} />
       <Route path="/register"   element={<RegisterPage />} />
+      <Route path="/onboarding" element={<OnboardingRoute><OnboardingPage /></OnboardingRoute>} />
       <Route path="/"           element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/retirement" element={<ProtectedRoute><RetirementPage /></ProtectedRoute>} />
       <Route path="/budget"     element={<ProtectedRoute><BudgetPage /></ProtectedRoute>} />

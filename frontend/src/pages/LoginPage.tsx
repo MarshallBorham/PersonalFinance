@@ -26,13 +26,13 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
-      const data = await res.json() as { token?: string; username?: string; error?: string };
+      const data = await res.json() as { token?: string; username?: string; onboardingComplete?: boolean; error?: string };
       if (!res.ok) {
         setError(data.error ?? "Login failed");
         return;
       }
-      login(data.token!, data.username!);
-      navigate("/");
+      login(data.token!, data.username!, data.onboardingComplete ?? false);
+      navigate(data.onboardingComplete ? "/" : "/onboarding");
     } catch {
       setError("Network error — is the server running?");
     } finally {

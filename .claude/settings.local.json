@@ -6,7 +6,12 @@
       "WebFetch(domain:www.alphavantage.co)",
       "WebFetch(domain:finnhub.io)",
       "WebSearch",
-      "WebFetch(domain:plaid.com)"
+      "WebFetch(domain:plaid.com)",
+      "WebFetch(domain:www.finra.org)",
+      "WebFetch(domain:www.investopedia.com)",
+      "WebFetch(domain:www.schwab.com)",
+      "WebFetch(domain:www.sec.gov)",
+      "WebFetch(domain:smartasset.com)"
     ]
   }
 }

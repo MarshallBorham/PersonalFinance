@@ -30,8 +30,8 @@ export default function RegisterPage() {
         setError(data.error ?? "Registration failed");
         return;
       }
-      login(data.token!, data.username!);
-      navigate("/");
+      login(data.token!, data.username!, false);
+      navigate("/onboarding");
     } catch {
       setError("Network error — is the server running?");
     } finally {

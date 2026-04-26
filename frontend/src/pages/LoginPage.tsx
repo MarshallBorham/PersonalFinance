@@ -1,9 +1,15 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
   const { login, loginAsGuest } = useAuth();
+
+  useEffect(() => {
+    if (localStorage.getItem("lightMode") !== "false") {
+      document.body.classList.add("light-mode");
+    }
+  }, []);
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

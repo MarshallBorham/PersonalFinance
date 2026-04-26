@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar() {
-  const { username, logout } = useAuth();
+  const { username, isGuest, logout } = useAuth();
   const navigate = useNavigate();
   const [lightMode, setLightMode] = useState(() => localStorage.getItem("lightMode") === "true");
 
@@ -31,7 +31,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        {username && <span className="sidebar-username">{username}</span>}
+        <span className="sidebar-username">{username ?? (isGuest ? "Guest" : "")}</span>
         <label className="dark-toggle">
           <input
             type="checkbox"

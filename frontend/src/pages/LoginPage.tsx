@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -65,6 +65,15 @@ export default function LoginPage() {
         </button>
         <div className="auth-link">
           No account? <Link to="/register">Register</Link>
+        </div>
+        <div style={{ marginTop: "0.75rem" }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => { loginAsGuest(); navigate("/"); }}
+          >
+            Continue as Guest
+          </button>
         </div>
       </form>
     </div>

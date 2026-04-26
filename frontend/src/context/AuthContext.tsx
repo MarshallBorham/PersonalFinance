@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface AuthContextValue {
-  token:      string | null;
-  username:   string | null;
-  isLoggedIn: boolean;
-  login:      (token: string, username: string) => void;
-  logout:     () => void;
-  authFetch:  (url: string, options?: RequestInit) => Promise<Response>;
+  token:          string | null;
+  username:       string | null;
+  isGuest:        boolean;
+  isLoggedIn:     boolean;
+  login:          (token: string, username: string) => void;
+  loginAsGuest:   () => void;
+  logout:         () => void;
+  authFetch:      (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -14,19 +16,33 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token,    setToken]    = useState<string | null>(() => sessionStorage.getItem("token"));
   const [username, setUsername] = useState<string | null>(() => sessionStorage.getItem("username"));
+  const [isGuest,  setIsGuest]  = useState<boolean>(() => sessionStorage.getItem("guest") === "true");
 
   function login(newToken: string, newUsername: string) {
     sessionStorage.setItem("token",    newToken);
     sessionStorage.setItem("username", newUsername);
+    sessionStorage.removeItem("guest");
     setToken(newToken);
     setUsername(newUsername);
+    setIsGuest(false);
+  }
+
+  function loginAsGuest() {
+    sessionStorage.setItem("guest", "true");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("username");
+    setToken(null);
+    setUsername(null);
+    setIsGuest(true);
   }
 
   function logout() {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("username");
+    sessionStorage.removeItem("guest");
     setToken(null);
     setUsername(null);
+    setIsGuest(false);
   }
 
   function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
@@ -41,7 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, username, isLoggedIn: !!token, login, logout, authFetch }}>
+    <AuthContext.Provider value={{
+      token, username, isGuest,
+      isLoggedIn: !!token || isGuest,
+      login, loginAsGuest, logout, authFetch,
+    }}>
       {children}
     </AuthContext.Provider>
   );

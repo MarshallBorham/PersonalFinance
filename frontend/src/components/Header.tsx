@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Sidebar() {
   const { username, isGuest, logout } = useAuth();
   const navigate = useNavigate();
-  const [lightMode, setLightMode] = useState(() => localStorage.getItem("lightMode") === "true");
+  const [lightMode, setLightMode] = useState(() => localStorage.getItem("lightMode") !== "false");
 
   useEffect(() => {
     document.body.classList.toggle("light-mode", lightMode);
